@@ -85,6 +85,18 @@ PODS:
   - libwebp/webp (1.2.1)
   - NMapsMap (3.14.1)
   - OpenSSL-Universal (1.1.1100)
+  - Permission-Camera (3.3.1):
+    - RNPermissions
+  - Permission-LocationAccuracy (3.3.1):
+    - RNPermissions
+  - Permission-LocationAlways (3.3.1):
+    - RNPermissions
+  - Permission-LocationWhenInUse (3.3.1):
+    - RNPermissions
+  - Permission-Notifications (3.3.1):
+    - RNPermissions
+  - Permission-PhotoLibrary (3.3.1):
+    - RNPermissions
   - RCT-Folly (2021.06.28.00-v2):
     - boost
     - DoubleConversion
@@ -292,6 +304,8 @@ PODS:
   - React-jsinspector (0.68.0)
   - React-logger (0.68.0):
     - glog
+  - react-native-geolocation (2.0.2):
+    - React
   - react-native-nmap (0.0.66):
     - NMapsMap
     - React
@@ -381,6 +395,8 @@ PODS:
     - React-Core
     - React-RCTImage
     - TOCropViewController
+  - RNPermissions (3.3.1):
+    - React-Core
   - RNReanimated (2.6.0):
     - DoubleConversion
     - FBLazyVector
@@ -453,6 +469,12 @@ DEPENDENCIES:
   - FlipperKit/SKIOSNetworkPlugin (= 0.125.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - OpenSSL-Universal (= 1.1.1100)
+  - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera`)
+  - Permission-LocationAccuracy (from `../node_modules/react-native-permissions/ios/LocationAccuracy`)
+  - Permission-LocationAlways (from `../node_modules/react-native-permissions/ios/LocationAlways`)
+  - Permission-LocationWhenInUse (from `../node_modules/react-native-permissions/ios/LocationWhenInUse`)
+  - Permission-Notifications (from `../node_modules/react-native-permissions/ios/Notifications`)
+  - Permission-PhotoLibrary (from `../node_modules/react-native-permissions/ios/PhotoLibrary`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
@@ -468,6 +490,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
+  - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
   - react-native-nmap (from `../node_modules/react-native-nmap`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -485,6 +508,7 @@ DEPENDENCIES:
   - RNFastImage (from `../node_modules/react-native-fast-image`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
@@ -524,6 +548,18 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  Permission-Camera:
+    :path: "../node_modules/react-native-permissions/ios/Camera"
+  Permission-LocationAccuracy:
+    :path: "../node_modules/react-native-permissions/ios/LocationAccuracy"
+  Permission-LocationAlways:
+    :path: "../node_modules/react-native-permissions/ios/LocationAlways"
+  Permission-LocationWhenInUse:
+    :path: "../node_modules/react-native-permissions/ios/LocationWhenInUse"
+  Permission-Notifications:
+    :path: "../node_modules/react-native-permissions/ios/Notifications"
+  Permission-PhotoLibrary:
+    :path: "../node_modules/react-native-permissions/ios/PhotoLibrary"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -550,6 +586,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
+  react-native-geolocation:
+    :path: "../node_modules/@react-native-community/geolocation"
   react-native-nmap:
     :path: "../node_modules/react-native-nmap"
   react-native-safe-area-context:
@@ -584,6 +622,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNImageCropPicker:
     :path: "../node_modules/react-native-image-crop-picker"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -614,6 +654,12 @@ SPEC CHECKSUMS:
   libwebp: 98a37e597e40bfdb4c911fc98f2c53d0b12d05fc
   NMapsMap: 79bae4e0d7cc5214dd6dabdb95687a1356616556
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
+  Permission-Camera: bae27a8503530770c35aadfecbb97ec71823382a
+  Permission-LocationAccuracy: 43d7a6b3d736a90168e9fc7117a721ca44722f83
+  Permission-LocationAlways: fbf36cbdcabc3101f1168ad1ec45cfc5a6448cc4
+  Permission-LocationWhenInUse: 006c85c8de0c05b5d8be8e8029e4f6b813270293
+  Permission-Notifications: 4b21cfdd5e8aab2cbb1f117aaa17b44e1f5736c4
+  Permission-PhotoLibrary: ddb5a158725b29cb12e9e477e8a5f5151c66cc3c
   RCT-Folly: 4d8508a426467c48885f1151029bc15fa5d7b3b8
   RCTRequired: bab4a7c3d7eb9553b13773ee190f279712efd1fc
   RCTTypeSafety: efbeb6e450ff6cef8e19c2cb5314c6d8bfeeef77
@@ -627,6 +673,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 010a66edf644339f6da72b34208b070089680415
   React-jsinspector: 90f0bfd5d04e0b066c29216a110ffb9a6c34f23f
   React-logger: 8474fefa09d05f573a13c044cb0dfd751d4e52e3
+  react-native-geolocation: c956aeb136625c23e0dce0467664af2c437888c9
   react-native-nmap: cfcc5402746040494c544ea90a6062f49505acdf
   react-native-safe-area-context: f98b0b16d1546d208fc293b4661e3f81a895afd9
   React-perflogger: 15cb741d6c2379f4d3fc8f9e4d4e1110ef3020cb
@@ -644,6 +691,7 @@ SPEC CHECKSUMS:
   RNFastImage: 1f2cab428712a4baaf78d6169eaec7f622556dd7
   RNGestureHandler: 6e757e487a4834e7280e98e9bac66d2d9c575e9c
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
+  RNPermissions: 34d678157c800b25b22a488e4d8babb57456e796
   RNReanimated: 89a32ebf01d2dac2eb35b3b1628952f626db93d7
   RNScreens: 40a2cb40a02a609938137a1e0acfbf8fc9eebf19
   RNVectorIcons: 7923e585eaeb139b9f4531d25a125a1500162a0b
@@ -654,6 +702,6 @@ SPEC CHECKSUMS:
   Yoga: 6671cf077f614314c22fd09ddf87d7abeee64e96
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: cc42382fae7f458b6c03aa7c5087c540c103ea2e
+PODFILE CHECKSUM: cc0954fc461d6a96fff4731f6456a65d8fe99cad
 
 COCOAPODS: 1.11.3
