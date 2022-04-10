@@ -42,6 +42,10 @@ const ShowMap = ({ navigation }: IShowMap) => {
     longitude: 0,
   });
   const [goMyCurrentPos, setGoMyCurrentPos] = useState<boolean>(false);
+  const [centerPos, setCenterPos] = useState<myPositionType>({
+    latitude: 0,
+    longitude: 0,
+  });
   const [isMakingAnchor, setIsMakingAnchor] = useState<boolean>(false);
   const [myAnchorPos, setMyAnchorPos] = useState<myAnchorPosType>({
     x: 0,
@@ -57,11 +61,9 @@ const ShowMap = ({ navigation }: IShowMap) => {
   useEffect(() => {
     Geolocation.getCurrentPosition(
       (info) => {
-        console.log('get current pos!');
-        setMyPosition({
-          latitude: info.coords.latitude,
-          longitude: info.coords.longitude,
-        });
+        const coord = info.coords;
+        setMyPosition(coord);
+        setCenterPos(coord);
       },
       console.error,
       {
@@ -77,6 +79,11 @@ const ShowMap = ({ navigation }: IShowMap) => {
     setIsMakingAnchor(true);
     setMyAnchorPos(e);
 
+    //센터 위치 변경
+    const coord = { latitude, longitude };
+    setCenterPos(coord);
+
+    // 내 위치로부터 거리
     const distanceInfo = CalDistance({
       lat1: myPosition.latitude,
       lon1: myPosition.longitude,
@@ -108,8 +115,8 @@ const ShowMap = ({ navigation }: IShowMap) => {
         onMapClick={onMapClick}
         center={{
           zoom: 17,
-          latitude: myPosition?.latitude,
-          longitude: myPosition?.longitude,
+          latitude: centerPos.latitude,
+          longitude: centerPos.longitude,
         }}
         logoGravity={16}>
         <Marker
@@ -136,7 +143,8 @@ const ShowMap = ({ navigation }: IShowMap) => {
             // image={require('../../assets/pin.png')}
             onClick={() => console.log('click')}
             caption={{
-              text: `내 위치에서 ${distanceFromMyPos.distanceText}`,
+              text: `${distanceFromMyPos.distanceText}`,
+              requestedWidth: 60,
             }}
           />
         )}

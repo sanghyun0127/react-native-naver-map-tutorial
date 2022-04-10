@@ -23,6 +23,7 @@
     "react": "17.0.2",
     "react-native": "0.68.0",
     "react-native-collapsible": "^1.6.0",
+    "react-native-easy-toast": "^2.0.0",
     "react-native-fast-image": "^8.5.11",
     "react-native-gesture-handler": "^2.3.2",
     "react-native-image-crop-picker": "^0.37.3",
@@ -35,6 +36,7 @@
     "react-native-screens": "^3.13.1",
     "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.1.0",
+    "react-native-video": "^5.2.0",
     "react-redux": "^7.2.8"
   },
   "devDependencies": {
