@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
 
 const CommunityHome = () => {
   return (
-    <View>
-      <Text>CommunityHome</Text>
-    </View>
-  )
-}
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <Text>aa</Text>
+    </SafeAreaView>
+  );
+};
 
-export default CommunityHome
+export default CommunityHome;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

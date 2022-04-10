@@ -20,6 +20,10 @@ import { screenWidth } from '../../utils/css';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParams } from '../../navigation/StackParams';
 import CalDistance from '../../components/functions/calDistance';
+import { useAppSelector } from '../../redux/hook';
+import { markerListStatus } from '../../redux/marker';
+import ReactNativeModal from 'react-native-modal';
+import Video from 'react-native-video';
 
 type myPositionType = {
   latitude: number;
@@ -37,6 +41,11 @@ interface IShowMap {
   navigation: NativeStackNavigationProp<RootStackParams>;
 }
 const ShowMap = ({ navigation }: IShowMap) => {
+  //redux
+  const markerList = useAppSelector(markerListStatus);
+
+  //state
+  //position
   const [myPosition, setMyPosition] = useState<myPositionType>({
     latitude: 0,
     longitude: 0,
@@ -57,6 +66,10 @@ const ShowMap = ({ navigation }: IShowMap) => {
     roundD: number;
     distanceText: string;
   }>({ roundD: 0, distanceText: '' });
+
+  //each marker
+  const [isOpenMarker, setIsOpenMarker] = useState<boolean>(false);
+  const [markerInfo, setMarkerInfo] = useState<any>();
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -94,6 +107,8 @@ const ShowMap = ({ navigation }: IShowMap) => {
   };
 
   const onShareMyView = () => {
+    setIsMakingAnchor(false);
+    setMyAnchorPos({ x: 0, y: 0, latitude: 0, longitude: 0 });
     if (distanceFromMyPos.roundD < 0.5) {
       navigation.navigate('ShareMyView', { myAnchorPos });
     }
@@ -131,6 +146,22 @@ const ShowMap = ({ navigation }: IShowMap) => {
             text: '내 위치',
           }}
         />
+
+        {markerList.map((marker) => (
+          <View key={marker.title}>
+            <Marker
+              coordinate={marker.coord}
+              pinColor="black"
+              onClick={() => {
+                setMarkerInfo(marker);
+                setIsOpenMarker(true);
+              }}
+              caption={{
+                text: marker.title,
+              }}
+            />
+          </View>
+        ))}
         {isMakingAnchor && (
           <Marker
             coordinate={{
@@ -149,6 +180,27 @@ const ShowMap = ({ navigation }: IShowMap) => {
           />
         )}
       </NaverMapView>
+      {isOpenMarker && (
+        <View
+          style={{
+            width: screenWidth - 40,
+            height: 200,
+            alignSelf: 'center',
+            position: 'absolute',
+            top: 100,
+            backgroundColor: 'white',
+          }}>
+          <Video
+            source={{ uri: markerInfo?.videoInfo.sourceURL }}
+            style={{ width: 200, height: 100 }}
+          />
+          <Text>{markerInfo?.title}</Text>
+          <Text>{markerInfo?.content}</Text>
+          <TouchableOpacity onPress={() => setIsOpenMarker(false)}>
+            <Text>닫기</Text>
+          </TouchableOpacity>
+        </View>
+      )}
       {isMakingAnchor && (
         <>
           {distanceFromMyPos.roundD < 0.5 && (

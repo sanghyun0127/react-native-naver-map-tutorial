@@ -1,7 +1,10 @@
 import {
+  ActivityIndicator,
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -12,6 +15,11 @@ import { RootStackParams } from '../../navigation/StackParams';
 import { screenWidth } from '../../utils/css';
 import ReactNativeModal from 'react-native-modal';
 import ImagePicker from 'react-native-image-crop-picker';
+import Video from 'react-native-video';
+import FastImage from 'react-native-fast-image';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useAppDispatch, useAppSelector } from '../../redux/hook';
+import { markerListStatus, setMarkerList } from '../../redux/marker';
 
 interface IShareMyView {
   navigation: NativeStackNavigationProp<RootStackParams>;
@@ -23,60 +31,165 @@ interface IShareMyView {
 }
 
 const ShareMyView = ({
+  navigation,
   route: {
     params: { myAnchorPos },
   },
 }: IShareMyView) => {
+  //props
   const { latitude, longitude } = myAnchorPos;
+  //redux
+  const dispatch = useAppDispatch();
+  const markerList = useAppSelector(markerListStatus);
+  //state
+  const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [videoInfo, setVideoInfo] = useState<any>();
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
 
-  const openVideoPicker = useCallback(() => {
+  const openVideoPicker = () => {
     ImagePicker.openPicker({
       width: 300,
       height: 300,
       mediaType: 'video',
     }).then((video) => {
-      console.log(video);
+      const { duration, mime, sourceURL } = video;
+      if (Number(duration) + 1000 > 20000) {
+        Alert.alert('20초 이하의 영상만 업로드 가능합니다.');
+      } else {
+        setVideoInfo(video);
+      }
     });
-  }, []);
+  };
+
+  const onRegisterMyView = () => {
+    setIsUploading(true);
+    try {
+      const createdAt = Date.now();
+      const data = {
+        title,
+        content,
+        videoInfo,
+        coord: { latitude, longitude },
+        createdAt,
+        owner: 'me',
+      };
+      const updated = [data, ...markerList];
+      dispatch(setMarkerList(updated));
+      navigation.goBack();
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
-    <NavBase title="내 시야 공유" closeType={true}>
-      <ScrollView style={{ paddingHorizontal: 20 }}>
+    <NavBase
+      title="내 시야 공유"
+      closeType={true}
+      headerRight={
+        videoInfo && (
+          <TouchableOpacity onPress={onRegisterMyView}>
+            <Text style={{ color: 'blue' }}>등록</Text>
+          </TouchableOpacity>
+        )
+      }>
+      {isUploading && <ActivityIndicator />}
+      {!videoInfo ? (
         <TouchableOpacity
-          onPress={() => setIsModalVisible(true)}
+          onPress={openVideoPicker}
           style={{
             width: screenWidth - 40,
-            height: 160,
-            borderWidth: 1,
+            height: screenWidth - 40,
+            borderWidth: 0,
             borderColor: '#99999',
             borderRadius: 12,
             justifyContent: 'center',
             alignItems: 'center',
-          }}>
-          <Text>20초 이하의 주변 영상을 공유 해보세요!!</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      {/* <ReactNativeModal
-        isVisible={isModalVisible}
-        style={{ margin: 0 }}
-        onBackdropPress={() => setIsModalVisible(false)}>
-        <View
-          style={{
-            width: screenWidth * 0.8,
-            borderRadius: 12,
-            backgroundColor: 'white',
             alignSelf: 'center',
+            position: 'absolute',
+            top: screenWidth / 2,
           }}>
-          <TouchableOpacity activeOpacity={0.5} style={styles.modalEachBox}>
-            <Text style={styles.modalEachText}>사진 업로드</Text>
-          </TouchableOpacity>
-          <View style={{ height: 0.5, backgroundColor: '#999999' }} />
-          <TouchableOpacity activeOpacity={0.5} style={styles.modalEachBox}>
-            <Text style={styles.modalEachText}>동영상 업로드</Text>
-          </TouchableOpacity>
-        </View>
-      </ReactNativeModal> */}
+          <FastImage
+            source={require('../../assets/video.png')}
+            style={{ width: 200, height: 200 }}
+          />
+          <Text>클릭해서 영상 업로드 하기</Text>
+          <Text style={{ fontSize: 20, fontWeight: '500', marginTop: 30 }}>
+            20초 이하의 주변 영상을
+          </Text>
+          <Text style={{ fontSize: 20, fontWeight: '500' }}>
+            공유 해보세요!!
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <KeyboardAwareScrollView>
+          <View style={{ width: screenWidth }}>
+            <TouchableOpacity
+              onPress={() => setVideoInfo(null)}
+              style={{ alignSelf: 'flex-end', marginRight: 20 }}>
+              <Text style={{ fontSize: 16, color: 'red', fontWeight: '600' }}>
+                삭제
+              </Text>
+            </TouchableOpacity>
+            <Video
+              source={{ uri: videoInfo?.sourceURL }}
+              style={{
+                width: screenWidth,
+                height: (screenWidth * 3) / 4,
+                marginTop: 20,
+              }}
+              onError={(error) => console.log('error', error)}
+              controls={true}
+              onLoad={(e) => console.log('onLoad', e)}
+              // onProgress={(e) => console.log('onProgress', e)}
+            />
+          </View>
+          <View style={{ marginTop: 40, paddingHorizontal: 20 }}>
+            <Text style={{ color: '#999999' }}>제목</Text>
+            <TextInput
+              value={title}
+              onChangeText={setTitle}
+              style={{
+                fontSize: 16,
+                marginTop: 10,
+                borderBottomWidth: 0.3,
+                borderBottomColor: '#999999',
+                paddingBottom: 4,
+                lineHeight: 24,
+              }}
+              maxLength={30}
+            />
+            <Text style={{ color: '#999999', marginTop: 40 }}>내용</Text>
+            <TextInput
+              value={content}
+              onChangeText={setContent}
+              style={{
+                fontSize: 16,
+                marginTop: 10,
+                borderBottomWidth: 0.3,
+                borderBottomColor: '#999999',
+                paddingBottom: 4,
+                lineHeight: 24,
+              }}
+              multiline={true}
+              maxLength={500}
+            />
+            <Text
+              style={{
+                alignSelf: 'flex-end',
+                marginTop: 4,
+                color: '#999999',
+                fontSize: 12,
+              }}>
+              {content.length} / 500
+            </Text>
+          </View>
+          <View style={{ height: 200 }} />
+        </KeyboardAwareScrollView>
+      )}
     </NavBase>
   );
 };
