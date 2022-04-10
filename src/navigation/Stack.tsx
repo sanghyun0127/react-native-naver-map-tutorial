@@ -3,7 +3,8 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import Tab from './Tab';
-import WritePost from '../pages/map/WritePost';
+import ShareMyView from '../pages/map/ShareMyView';
+import RequestView from '../pages/map/RequestView';
 
 const globalScreenOptions = {
   headerStyle: { backgroundColor: 'white' },
@@ -20,8 +21,13 @@ export const MainStackScreens = () => {
       <MainStack.Navigator screenOptions={globalScreenOptions}>
         <MainStack.Screen name="Tab" component={Tab} />
         <MainStack.Screen
-          name="WritePost"
-          component={WritePost}
+          name="ShareMyView"
+          component={ShareMyView}
+          options={{ animation: 'slide_from_bottom' }}
+        />
+        <MainStack.Screen
+          name="RequestView"
+          component={RequestView}
           options={{ animation: 'slide_from_bottom' }}
         />
       </MainStack.Navigator>

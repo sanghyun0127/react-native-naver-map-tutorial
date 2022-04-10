@@ -1,6 +1,9 @@
 export type RootStackParams = {
   ShowMap: undefined;
-  WritePost: {
+  ShareMyView: {
+    myAnchorPos: any;
+  };
+  RequestView: {
     myAnchorPos: any;
   };
   CommunityHome: undefined;

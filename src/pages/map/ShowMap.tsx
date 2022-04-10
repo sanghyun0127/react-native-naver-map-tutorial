@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import NaverMapView, {
   Circle,
   Marker,
@@ -19,15 +19,40 @@ import { MaterialCommunityIcons } from '../../utils/preImport';
 import { screenWidth } from '../../utils/css';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParams } from '../../navigation/StackParams';
+import CalDistance from '../../components/functions/calDistance';
+
+type myPositionType = {
+  latitude: number;
+  longitude: number;
+};
+
+type myAnchorPosType = {
+  x: number;
+  y: number;
+  latitude: number;
+  longitude: number;
+};
 
 interface IShowMap {
   navigation: NativeStackNavigationProp<RootStackParams>;
 }
 const ShowMap = ({ navigation }: IShowMap) => {
-  const [myPosition, setMyPosition] = useState<any>();
+  const [myPosition, setMyPosition] = useState<myPositionType>({
+    latitude: 0,
+    longitude: 0,
+  });
   const [goMyCurrentPos, setGoMyCurrentPos] = useState<boolean>(false);
   const [isMakingAnchor, setIsMakingAnchor] = useState<boolean>(false);
-  const [myAnchorPos, setMyAnchorPos] = useState<any>();
+  const [myAnchorPos, setMyAnchorPos] = useState<myAnchorPosType>({
+    x: 0,
+    y: 0,
+    latitude: 0,
+    longitude: 0,
+  });
+  const [distanceFromMyPos, setDistanceFromMyPos] = useState<{
+    roundD: number;
+    distanceText: string;
+  }>({ roundD: 0, distanceText: '' });
 
   useEffect(() => {
     Geolocation.getCurrentPosition(
@@ -46,11 +71,32 @@ const ShowMap = ({ navigation }: IShowMap) => {
     );
   }, [goMyCurrentPos]);
 
+  const onMapClick = (e: myAnchorPosType) => {
+    //x,y 기준 left, top
+    const { x, y, latitude, longitude } = e;
+    setIsMakingAnchor(true);
+    setMyAnchorPos(e);
+
+    const distanceInfo = CalDistance({
+      lat1: myPosition.latitude,
+      lon1: myPosition.longitude,
+      lat2: latitude,
+      lon2: longitude,
+    });
+    setDistanceFromMyPos(distanceInfo);
+  };
+
+  const onShareMyView = () => {
+    if (distanceFromMyPos.roundD < 0.5) {
+      navigation.navigate('ShareMyView', { myAnchorPos });
+    }
+  };
+
   return (
     <>
       <StatusBar barStyle={'dark-content'} />
       <NaverMapView
-        style={{ width: '100%', height: '100%' }}
+        style={{ width: '100%', height: '100%', backgroundColor: 'teal' }}
         rotateGesturesEnabled={true}
         tiltGesturesEnabled={false}
         showsMyLocationButton={false}
@@ -59,18 +105,25 @@ const ShowMap = ({ navigation }: IShowMap) => {
         maxZoomLevel={20}
         minZoomLevel={10}
         onCameraChange={(e) => console.log(JSON.stringify(e))}
-        onMapClick={(e) => {
-          const { x, y, latitude, longitude } = e;
-          //x,y 기준 left, top
-          console.log(latitude, longitude, x, y, 'click');
-          setIsMakingAnchor(true);
-          setMyAnchorPos(e);
-        }}
+        onMapClick={onMapClick}
         center={{
           zoom: 17,
           latitude: myPosition?.latitude,
           longitude: myPosition?.longitude,
-        }}>
+        }}
+        logoGravity={16}>
+        <Marker
+          coordinate={{
+            latitude: myPosition?.latitude,
+            longitude: myPosition?.longitude,
+          }}
+          width={60}
+          height={60}
+          image={require('../../assets/penguin.png')}
+          caption={{
+            text: '내 위치',
+          }}
+        />
         {isMakingAnchor && (
           <Marker
             coordinate={{
@@ -82,13 +135,37 @@ const ShowMap = ({ navigation }: IShowMap) => {
             // height={50}
             // image={require('../../assets/pin.png')}
             onClick={() => console.log('click')}
+            caption={{
+              text: `내 위치에서 ${distanceFromMyPos.distanceText}`,
+            }}
           />
         )}
       </NaverMapView>
       {isMakingAnchor && (
         <>
+          {distanceFromMyPos.roundD < 0.5 && (
+            <TouchableOpacity
+              onPress={onShareMyView}
+              style={{
+                width: screenWidth * 0.5,
+                height: 40,
+                backgroundColor: 'orange',
+                justifyContent: 'center',
+                alignItems: 'center',
+                position: 'absolute',
+                bottom: 130,
+                alignSelf: 'center',
+                borderRadius: 6,
+                shadowOpacity: 0.5,
+                shadowOffset: { width: 1, height: 1 },
+              }}>
+              <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                내 시야공유하기
+              </Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
-            onPress={() => navigation.navigate('WritePost', { myAnchorPos })}
+            onPress={() => navigation.navigate('RequestView', { myAnchorPos })}
             style={{
               width: screenWidth * 0.5,
               height: 40,
@@ -103,7 +180,7 @@ const ShowMap = ({ navigation }: IShowMap) => {
               shadowOffset: { width: 1, height: 1 },
             }}>
             <Text style={{ color: 'white', fontWeight: 'bold' }}>
-              내 시야공유하기
+              시야 공유 요청하기
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
